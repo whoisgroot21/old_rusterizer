@@ -3,6 +3,8 @@
 use std::ops::{Add, Sub};
 use std::f32;
 
+//implement generics for vector types
+
 pub struct Color(pub u8, pub u8, pub u8, pub f32);
 
 /*pub struct Color {
@@ -52,13 +54,13 @@ impl Color{
 	}
 }
 
-pub trait Vectorx: Add + Sub + Sized { //useless
-	//fn swap<T:Vectorx>(a:T,  b:T);
-	//normalize
-	//dot
-	//cross
-	//mag
-}
+/*pub trait Vectorx: Add + Sub + Sized { useless
+	fn swap<T:Vectorx>(a:T,  b:T);
+	normalize
+	dot
+	cross
+	mag
+}*/
 
 pub struct vec2{
 	pub x:f32,
