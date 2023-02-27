@@ -3,7 +3,7 @@
 mod util;
 mod window_handler;
 mod renderer;
-//mod obj_loader;
+mod obj_loader;
 
 use std::time;
 
@@ -62,7 +62,10 @@ fn main() {
 
 	let mut rad:f32 = 0.0;
 
-    //obj_loader::load_from_obj("res/cube2.obj");
+    let obj = obj_loader::load_from_obj("res/cube.obj");//cube has normals //2 doesnt
+
+    //let CUBE_MODEL = obj.vertices;
+    //let INDEX_BUFFER = obj.indices
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
 

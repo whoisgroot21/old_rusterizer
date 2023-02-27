@@ -1,10 +1,11 @@
 use std::fs;
 use std::collections::HashMap;
+
 use crate::util;
 
 pub struct ObjMesh {
-	vertices: Vec<util::Vertex>,
-	indices: Vec<usize>
+	pub vertices: Vec<util::Vertex>,
+	pub indices: Vec<usize>
 }
 
 pub fn load_from_obj(filepath: &str)-> ObjMesh{
@@ -49,6 +50,13 @@ pub fn load_from_obj(filepath: &str)-> ObjMesh{
 			Some("vn")=>{
 				has_normal = true;
 				//take care of normals here
+				let normal = util::vec4{
+					x: tokens.next().unwrap().parse().unwrap(),
+					y: tokens.next().unwrap().parse().unwrap(),
+					z: tokens.next().unwrap().parse().unwrap(),
+					w: 1.0
+				};
+				normals.push(normal);
 			},
 
 			
@@ -82,16 +90,23 @@ pub fn load_from_obj(filepath: &str)-> ObjMesh{
 					}
 				});
 				for i in t_vertice{
-					vertices.push(i);
+					let ind = cache.iter().position(|x| x == &i);
+					if let Some(index) = ind{
+						indices.push(index);
+					}
+					else {
+						cache.push(i.copy());
+						vertices.push(i);
+						indices.push(vertices.len()-1);
+					}
 				}
-				//do caching for vertices with hash maps
-				//also do indices stuff here
-
 			},
 			
 			_=>continue
 		}
 	}
+
+	//println!("{:?}", vertices.len());
 	ObjMesh{vertices, indices}
 
 }

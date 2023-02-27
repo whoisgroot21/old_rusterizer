@@ -62,6 +62,7 @@ impl Color{
 	mag
 }*/
 
+#[derive(PartialEq)]
 pub struct vec2{
 	pub x:f32,
 	pub y:f32
@@ -86,6 +87,7 @@ impl vec2{
 	//pub fn copy(&self)->vec2{}
 }
 
+#[derive(PartialEq)]
 pub struct vec3 {
 	pub x:f32,
 	pub y:f32,
@@ -177,6 +179,7 @@ impl vec3{
 	}
 }
 
+#[derive(PartialEq, Debug)]
 pub struct vec4 {
 	pub x:f32,
 	pub y:f32,
@@ -229,13 +232,30 @@ impl matrix4x4 {
 }
 
 
-
+#[derive(PartialEq)]
 pub struct Vertex {
 	pub pos: vec4,
 	pub normal: Option<vec4>,
 	pub tex_coord: Option<vec4>
 	//pub color: Option<Color>	
 }
+
+impl Vertex {
+	pub fn copy(&self) -> Vertex{
+		let normal: Option<vec4>;
+		let tex_coord: Option<vec4>;
+		if let Some(nm) = &self.normal{normal = Some(nm.copy());}
+		else{normal = None;}
+		if let Some(tc) = &self.tex_coord{tex_coord = Some(tc.copy())}
+		else {tex_coord = None;}
+		Vertex{
+			pos: self.pos.copy(),
+			normal: normal,
+			tex_coord: tex_coord
+		}
+	}
+}
+
 
 pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{ 
 	let slope:f32 = (y2-y1) /(x2-x1);
