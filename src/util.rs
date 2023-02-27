@@ -179,7 +179,7 @@ impl vec3{
 	}
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub struct vec4 {
 	pub x:f32,
 	pub y:f32,

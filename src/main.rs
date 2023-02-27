@@ -20,38 +20,6 @@ const ASPECT_RATIO: f32 = WIDTH as f32/HEIGHT as f32;
 const Z_NEAR: f32 = 0.5;
 const Z_FAR: f32 = 500.;
 
-const CUBE_MODEL: [util::vec4; 8] = [		
-	
-	vec4{x: -1.0, y: -1.0, z:  -1.0, w: 1.0}, //0
-	vec4{x:  1.0, y: -1.0, z:  -1.0, w: 1.0}, //1
-	vec4{x:  1.0, y:  1.0, z:  -1.0, w: 1.0}, //2
-	vec4{x: -1.0, y:  1.0, z:  -1.0, w: 1.0}, //3
-	vec4{x: -1.0, y: -1.0, z:  1.0, w: 1.0}, //4
-	vec4{x:  1.0, y: -1.0, z:  1.0, w: 1.0}, //5
-	vec4{x:  1.0, y:  1.0, z:  1.0, w: 1.0}, //6
-	vec4{x: -1.0, y:  1.0, z:  1.0, w: 1.0}  //7
-
-];
-
-const INDEX_BUFFER:[usize; 36] = [
-
-	0, 1, 2, //FRONT
-	2, 3, 0, //FRONT
-	0, 1, 5, //TOP
-	5, 4, 0, //TOP
-	3, 2, 6, //BOTTOM
-	6, 7, 3, //BOTTOM
-	6, 5, 1, //RIGHT
-	1, 2, 6, //RIGHT
-	3, 0, 4, //LEFT
-	4, 7, 3, //LEFT
-	4, 5, 6, //BACK
-	6, 7, 4  //BACK
-		
-];
-
-
-
 fn main() {
 
 	let mut window_handler = WindowHandler::new(WIDTH, HEIGHT);
@@ -62,10 +30,10 @@ fn main() {
 
 	let mut rad:f32 = 0.0;
 
-    let obj = obj_loader::load_from_obj("res/cube.obj");//cube has normals //2 doesnt
+    let obj = obj_loader::load_from_obj("res/cube.obj");
 
-    //let CUBE_MODEL = obj.vertices;
-    //let INDEX_BUFFER = obj.indices
+    let model_data = obj.vertices;
+    let index_buffer = obj.indices;
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
 
@@ -96,6 +64,8 @@ fn main() {
   			[0.0, 0.0, 0.0, 1.0]
 		]};
 
+		//transform {late, tate, scale}
+
   		while delta_time > 60{
 
   			rad+=0.1;
@@ -110,13 +80,14 @@ fn main() {
   		}
 
 
-		let mut vertex_buffer = Vec::new();
-		for i in (0..CUBE_MODEL.len()){
+		let mut vertex_buffer: Vec<Vertex> = Vec::new();
+		for i in (0..model_data.len()){
 			//scale -> translate ->project
-			let scaled = scale.matrix_vec_mult(&CUBE_MODEL[i]);
+			let scaled = scale.matrix_vec_mult(&model_data[i].pos);
 			let rotated = rotate.matrix_vec_mult(&scaled);
 			let translated = translate.matrix_vec_mult(&rotated);
-			vertex_buffer.push(translated);
+			let rnormal = rotate.matrix_vec_mult(&model_data[i].normal.as_ref().unwrap());
+			vertex_buffer.push(Vertex{pos: translated, normal: Some(rnormal), tex_coord: None});
 		}
 
 		let cam_pos: vec3 = vec3{x: 0.0, y: 0.0, z: 0.0};
@@ -130,26 +101,17 @@ fn main() {
     		]};
 
 		//for points in polygon
-		for i in 0..(INDEX_BUFFER.len()/3){
-							
+		for i in 0..(index_buffer.len()/3){
 
 
-
-			let normal = vec3::cross(
-				&(vec3::normalize(&(&vertex_buffer[INDEX_BUFFER[(i*3)+1]].to_vec3()
-				-&vertex_buffer[INDEX_BUFFER[(i*3)+2]].to_vec3()))),
-				&(vec3::normalize(&(&vertex_buffer[INDEX_BUFFER[(i*3)+1]].to_vec3()
-				-&vertex_buffer[INDEX_BUFFER[(i*3)+0]].to_vec3())))
-				);
-
-
-			let cam_dir = vec3::normalize(&(&vertex_buffer[INDEX_BUFFER[(i*3)+1]].to_vec3()-&cam_pos));
-			//if (vec3::dot(&normal, &cam_dir))>0.0	//backface culling
+			let cam_dir = vec3::normalize(&(&vertex_buffer[index_buffer[(i*3)+1]].pos.to_vec3()-&cam_pos));
+			//backface culling
+			if (vec3::dot(&vertex_buffer[index_buffer[(i*3)+1]].normal.as_ref().unwrap().to_vec3(), &cam_dir))<0.0
 			{
 
-				let mut p1 = proj.matrix_vec_mult(&vertex_buffer[INDEX_BUFFER[(i*3)+0]]).to_vec3();
-				let mut p2 = proj.matrix_vec_mult(&vertex_buffer[INDEX_BUFFER[(i*3)+1]]).to_vec3();
-				let mut p3 = proj.matrix_vec_mult(&vertex_buffer[INDEX_BUFFER[(i*3)+2]]).to_vec3();
+				let mut p1 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+0]].pos).to_vec3();
+				let mut p2 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+1]].pos).to_vec3();
+				let mut p3 = proj.matrix_vec_mult(&vertex_buffer[index_buffer[(i*3)+2]].pos).to_vec3();
 
 				p1.x = (p1.x+1.0)*(WIDTH/2) as f32;
 				p1.y = (p1.y+1.0)*(HEIGHT/2) as f32;
@@ -164,15 +126,19 @@ fn main() {
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
 
 				
-				if i==0 || i==1{window_handler.set_color(Color(77, 78, 216, 1.0));}
-				else if i==2 || i==3{window_handler.set_color(Color(234, 234, 232, 1.0));}
-				else if i==4 || i==5{window_handler.set_color(Color(243, 196, 82, 1.0));}
-				else if i==6 || i==7{window_handler.set_color(Color(81, 225, 84, 1.0));}
-				else if i==8 || i==9{window_handler.set_color(Color(215, 78, 82, 1.0));}
-				else if i==10 || i==11{window_handler.set_color(Color(235, 125, 52, 1.0));}
+				/*if i==0 || i==6{window_handler.set_color(Color(213, 212, 76, 1.0));}
+				else if i==3 || i==9{window_handler.set_color(Color(234, 234, 232, 1.0));}
+				else if i==7 || i==1{window_handler.set_color(Color(235, 125, 52, 1.0));}
+				else if i==5 || i==11{window_handler.set_color(Color(77, 78, 216, 1.0));}
+				else if i==2 || i==8{window_handler.set_color(Color(215, 78, 82, 1.0));}
+				else if i==4 || i==10{window_handler.set_color(Color(81, 225, 84, 1.0));}
+				else {window_handler.set_color(Color(234, 234, 232, 1.0));}*/
+				//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
+				
+				window_handler.set_color(Color(234, 234, 232, 1.0));
 				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
-
-				//window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
+				window_handler.set_color(Color(0, 0, 0, 1.0));
+				window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
 			}
 		}
 		window_handler.render();
