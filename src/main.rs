@@ -17,8 +17,10 @@ const WIDTH: usize = 640;
 const HEIGHT: usize = 360;
 const ASPECT_RATIO: f32 = WIDTH as f32/HEIGHT as f32;
 
-const Z_NEAR: f32 = 0.5;
-const Z_FAR: f32 = 500.;
+
+const FOV_ANGLE:f32 = 1.0472;
+const Z_NEAR: f32 = 0.5;		//1./FOV_ANGLE.tan();
+const Z_FAR: f32 = 500.0;
 
 fn main() {
 
@@ -26,27 +28,24 @@ fn main() {
 
 	let mut delta_time:u128 = 0;
 
-	let mut obj_pos = vec3{x: 150.0, y: 100.0, z: 150.0};
+	let mut obj_pos = vec3{x: 0.0, y: 0.0, z: 100.0};
 
 	let mut rad:f32 = 0.0;
 
-    let obj = obj_loader::load_from_obj("res/cube.obj");
+    let obj = obj_loader::load_from_obj("res/teapot_1.obj");
 
     let model_data = obj.vertices;
     let index_buffer = obj.indices;
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
 
-		//rotate!!
-
   		let now = time::Instant::now();
 
-
 		let scale = matrix4x4{data: [
-			[50.0, 0.0,  0.0,  0.0],
-			[0.0,  50.0, 0.0,  0.0],
-			[0.0,  0.0,  50.0, 0.0],
-			[0.0,  0.0,  0.0,  1.0]
+			[30.0, 0.0,  0.0,  0.0],
+			[0.0,  30.0, 0.0,  0.0],
+			[0.0,  0.0,  30.0, 0.0],
+			[0.0,  0.0,  0.0, 1.0]
 			
 			]};
 
@@ -64,17 +63,17 @@ fn main() {
   			[0.0, 0.0, 0.0, 1.0]
 		]};
 
-		//transform {late, tate, scale}
+		//transform {scale, tate, late}
 
   		while delta_time > 60{
-
-  			rad+=0.1;
+  			
+  			/*rad+=0.1;
   			rotate = matrix4x4{data: [
   				[1.0, 0.0, 0.0, 0.0],
   				[0.0, rad.cos(), -1.*rad.sin(), 0.0],
   				[0.0, rad.sin(), rad.cos(), 0.0],
   				[0.0, 0.0, 0.0, 1.0]
-  			]};
+  			]};*/
   			window_handler.clear();
   			delta_time-=60;
   		}
@@ -124,21 +123,11 @@ fn main() {
 				p3.x = (p3.x+1.0)*(WIDTH/2) as f32;
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
-
 				
-				/*if i==0 || i==6{window_handler.set_color(Color(213, 212, 76, 1.0));}
-				else if i==3 || i==9{window_handler.set_color(Color(234, 234, 232, 1.0));}
-				else if i==7 || i==1{window_handler.set_color(Color(235, 125, 52, 1.0));}
-				else if i==5 || i==11{window_handler.set_color(Color(77, 78, 216, 1.0));}
-				else if i==2 || i==8{window_handler.set_color(Color(215, 78, 82, 1.0));}
-				else if i==4 || i==10{window_handler.set_color(Color(81, 225, 84, 1.0));}
-				else {window_handler.set_color(Color(234, 234, 232, 1.0));}*/
+				//window_handler.set_color(Color(234, 234, 232, 1.0));
 				//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
-				
-				window_handler.set_color(Color(234, 234, 232, 1.0));
+				//window_handler.set_color(Color(0, 0, 0, 1.0));	
 				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
-				window_handler.set_color(Color(0, 0, 0, 1.0));
-				window_handler.draw_triangle("WIREFRAME", &p1, &p2, &p3);
 			}
 		}
 		window_handler.render();

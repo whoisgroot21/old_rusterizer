@@ -33,7 +33,7 @@ impl WindowHandler{
 			depth_buffer: depth_buffer,
 			win_WIDTH: WIDTH,
 			win_HEIGHT: HEIGHT,
-			current_color: Color(255,255,255,1.0).to_u32()//WHITE(255,255,255) AND BLACK(0)
+			current_color: Color(255,255,255,1.0).to_u32()
 		}
 	}
 
@@ -42,7 +42,6 @@ impl WindowHandler{
 			self.framebuffer[i] = 0;
 			self.depth_buffer[i]= 1.;
 		}
-		//self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
 	}
 
 
@@ -63,9 +62,15 @@ impl WindowHandler{
 
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
 		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
-	}
-	
+	}	
 }
+
+
+
+
+
+
+
 
 /*
 

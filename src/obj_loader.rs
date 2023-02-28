@@ -6,6 +6,7 @@ use crate::util;
 pub struct ObjMesh {
 	pub vertices: Vec<util::Vertex>,
 	pub indices: Vec<usize>
+	//has_normal, has_texture
 }
 
 pub fn load_from_obj(filepath: &str)-> ObjMesh{
@@ -45,6 +46,12 @@ pub fn load_from_obj(filepath: &str)-> ObjMesh{
 			Some("vt")=>{
 				has_texture = true;
 				//take care of textures here
+				/*let normal = util::vec4{
+					x: tokens.next().unwrap().parse().unwrap(),
+					y: tokens.next().unwrap().parse().unwrap(),
+					z: tokens.next().unwrap().parse().unwrap(),
+					w: 1.0
+				};*/
 			},
 
 			Some("vn")=>{
@@ -107,6 +114,7 @@ pub fn load_from_obj(filepath: &str)-> ObjMesh{
 	}
 
 	//println!("{:?}", vertices.len());
+	println!("Model loaded!");
 	ObjMesh{vertices, indices}
 
 }
