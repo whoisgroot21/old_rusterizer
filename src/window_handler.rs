@@ -7,8 +7,8 @@ pub struct WindowHandler {
 	pub window: Window,
 	pub framebuffer: Vec<u32>,
 	pub depth_buffer: Vec<f32>,
-	pub win_WIDTH: usize,
-	pub win_HEIGHT: usize,
+	pub WIDTH: usize,
+	pub HEIGHT: usize,
 	pub current_color: u32
 
 }
@@ -31,41 +31,10 @@ impl WindowHandler{
 			window: window,
 			framebuffer: framebuffer,
 			depth_buffer: depth_buffer,
-			win_WIDTH: WIDTH,
-			win_HEIGHT: HEIGHT,
+			WIDTH: WIDTH,
+			HEIGHT: HEIGHT,
 			current_color: Color(255,255,255,1.0).to_u32()
 		}
-	}
-
-	pub fn clear(&mut self){
-		for i in (0..self.win_WIDTH*self.win_HEIGHT){
-			self.framebuffer[i] = 0;
-			self.depth_buffer[i]= 1.;
-		}
-	}
-
-
-	pub fn render(&mut self){
-		self.window.update_with_buffer(&self.framebuffer, self.win_WIDTH, self.win_HEIGHT).unwrap();
-	}
-
-
-	pub fn set_color(&mut self, color:Color){
-		self.current_color = color.to_u32();
-	}
-
-	#[allow(non_snake_case)]
-	pub fn putPixel(&mut self, x:u16, y:u16){
-		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = self.current_color;
-	}
-
-
-	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
-		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
-	}
-
-	pub fn put_pixel_with_color_u32(&mut self, x:u16, y:u16, color:u32){
-		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color;
 	}
 }
 

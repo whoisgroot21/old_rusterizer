@@ -9,6 +9,7 @@ mod texture_loader;
 use std::time;
 
 use util::*;
+use renderer::Renderer;
 use window_handler::WindowHandler;
 
 use minifb::Key;
@@ -20,12 +21,13 @@ const ASPECT_RATIO: f32 = WIDTH as f32/HEIGHT as f32;
 
 
 const FOV_ANGLE:f32 = 1.0472;
-const Z_NEAR: f32 = 0.5;		//1./FOV_ANGLE.tan();
+const Z_NEAR: f32 = 0.5;		//1.0/FOV_ANGLE.tan();
 const Z_FAR: f32 = 500.0;
 
 fn main() {
 
 	let mut window_handler = WindowHandler::new(WIDTH, HEIGHT);
+	let mut renderer = Renderer::new(WIDTH, HEIGHT);
 
 	let mut delta_time:u128 = 0;
 
@@ -77,7 +79,7 @@ fn main() {
   				[0.0, rad.sin(), rad.cos(), 0.0],
   				[0.0, 0.0, 0.0, 1.0]
   			]};*/
-  			window_handler.clear();
+  			renderer.clear();
   			delta_time-=60;
   		}
 
@@ -127,14 +129,14 @@ fn main() {
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
 				
-				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
+				renderer.draw_triangle("FILL", &p1, &p2, &p3);
 			}
 		}
-		window_handler.clear();
-		window_handler.render_texture(&test_tex);
+		renderer.clear();
+		renderer.render_texture(&test_tex);
 
-		window_handler.render();
-		window_handler.clear();
+		renderer.present(&mut window_handler.window);
+		renderer.clear();
 		delta_time += now.elapsed().as_millis();
 		//println!("{:?}", delta_time);
 	}

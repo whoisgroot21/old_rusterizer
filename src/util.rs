@@ -257,6 +257,14 @@ impl Vertex {
 }
 
 
+pub struct Rect {
+	x: f32,
+	y: f32,
+	w: f32,
+	h: f32
+}
+
+
 pub fn lerp(x1:f32, y1:f32, x2:f32, y2:f32, x:f32) -> f32{ 
 	let slope:f32 = (y2-y1) /(x2-x1);
 	
