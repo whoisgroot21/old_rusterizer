@@ -4,6 +4,7 @@ mod util;
 mod window_handler;
 mod renderer;
 mod obj_loader;
+mod texture_loader;
 
 use std::time;
 
@@ -32,7 +33,9 @@ fn main() {
 
 	let mut rad:f32 = 0.0;
 
-    let obj = obj_loader::load_from_obj("res/teapot_1.obj");
+    let obj = obj_loader::load_from_obj("res/cube.obj"); //teapot_1
+
+    let test_tex = texture_loader::Texture::load_from_ppm("res/test2.ppm");
 
     let model_data = obj.vertices;
     let index_buffer = obj.indices;
@@ -124,24 +127,15 @@ fn main() {
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
 				
-				//window_handler.set_color(Color(234, 234, 232, 1.0));
-				//window_handler.draw_triangle("FILL", &p1, &p2, &p3);
-				//window_handler.set_color(Color(0, 0, 0, 1.0));	
 				window_handler.draw_triangle("FILL", &p1, &p2, &p3);
 			}
 		}
+		window_handler.clear();
+		window_handler.render_texture(&test_tex);
+
 		window_handler.render();
 		window_handler.clear();
 		delta_time += now.elapsed().as_millis();
 		//println!("{:?}", delta_time);
 	}
 }
-
-
-
-//eaeae8 rgb(234, 234, 232) //white
-//4d4ed8 rgb(77, 78, 216)   //blue
-//d74e52 rgb(215, 78, 82)	//red
-//f3c452 rgb(235, 125, 52)  //orange
-//51e154 rgb(81, 225, 84)   //green
-//d5d44c rgb(213, 212, 76) //yellow

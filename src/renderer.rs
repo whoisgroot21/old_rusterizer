@@ -1,4 +1,5 @@
 use crate::util::*;
+use crate::texture_loader::*;
 use crate::WindowHandler;
 
 impl WindowHandler{
@@ -93,4 +94,14 @@ impl WindowHandler{
 		}
 		else {panic!("Invalid style");}
 	}
+
+pub fn render_texture(&mut self, tex: &Texture){ //rect method
+	for i in 0..tex.height {
+		for j in 0..tex.width{
+			self.put_pixel_with_color_u32(j as u16, i as u16, tex.pixels[i*tex.width+j])
+		}
+	}
+}
+
+
 }

@@ -114,7 +114,7 @@ pub fn load_from_obj(filepath: &str)-> ObjMesh{
 	}
 
 	//println!("{:?}", vertices.len());
-	println!("Model loaded!");
+	//println!("Model loaded!");
 	ObjMesh{vertices, indices}
 
 }

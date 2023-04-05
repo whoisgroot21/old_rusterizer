@@ -62,7 +62,11 @@ impl WindowHandler{
 
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
 		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color.to_u32();
-	}	
+	}
+
+	pub fn put_pixel_with_color_u32(&mut self, x:u16, y:u16, color:u32){
+		self.framebuffer[(x as u32 + y as u32 *self.win_WIDTH as u32)as usize] = color;
+	}
 }
 
 
