@@ -4,7 +4,7 @@ mod util;
 mod window_handler;
 mod renderer;
 mod obj_loader;
-mod texture_loader;
+mod texture;
 
 use std::time;
 
@@ -37,7 +37,7 @@ fn main() {
 
     let obj = obj_loader::load_from_obj("res/cube.obj"); //teapot_1
 
-    let test_tex = texture_loader::Texture::load_from_ppm("res/test2.ppm");
+    let test_tex = texture::Texture::load_from_ppm("res/test.ppm");
 
     let model_data = obj.vertices;
     let index_buffer = obj.indices;
@@ -133,7 +133,7 @@ fn main() {
 			}
 		}
 		renderer.clear();
-		renderer.render_texture(&test_tex);
+		renderer.render_texture(&test_tex, None, None);
 
 		renderer.present(&mut window_handler.window);
 		renderer.clear();

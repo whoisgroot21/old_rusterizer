@@ -1,5 +1,5 @@
 use crate::util::*;
-use crate::texture_loader::*;
+use crate::texture::*;
 use minifb::Window;
 
 pub struct Renderer {
@@ -143,10 +143,31 @@ impl Renderer{
 		else {panic!("Invalid style");}
 	}
 
-	pub fn render_texture(&mut self, tex: &Texture){ //rect method
+	pub fn draw_rect(&mut self, style:&str, rect: Rect)
+	{
+		if style == "WIREFRAME"{
+			self.draw_line(rect.x as u16, rect.y as u16, (rect.x+rect.w) as u16, rect.y as u16);
+			self.draw_line(rect.x as u16, rect.y as u16, rect.x as u16, (rect.y+rect.h) as u16);
+			self.draw_line((rect.x+rect.w) as u16, rect.y as u16, (rect.x+rect.w) as u16, (rect.y+rect.h) as u16);
+			self.draw_line(rect.x as u16, (rect.y+rect.h) as u16, (rect.x+rect.w) as u16, (rect.y+rect.h) as u16);
+		}
+		else if style == "FILL"{
+			for i in 0..rect.h as u32 +1{
+				self.draw_line(rect.x as u16, rect.y as u16 +i as u16, (rect.x+rect.w) as u16, rect.y as u16 + i as u16)
+			}
+			
+		}
+		else {panic!("Invalid style");}
+	}
+
+	pub fn render_texture(&mut self, tex: &Texture, src_rect: Option<Rect>, dest_rect: Option<Rect>){
+		
+		let src = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};
+		let dest = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};
+		//check if none
 		for i in 0..tex.height {
 			for j in 0..tex.width{
-				self.put_pixel_with_color_u32(j as u16, i as u16, tex.pixels[i*tex.width+j])
+				self.put_pixel_with_color_u32((j+dest.x as usize) as u16, (i+dest.y as usize) as u16, tex.pixels[i*tex.width+j])
 			}
 		}
 	}
