@@ -1,9 +1,12 @@
 use std::fs;
 use crate::util;
 
+//Sprite.rs
+
+//This isn't an actual texture since its on CPU
 pub struct Texture {
-	pub width: usize,	//pub or not
-	pub height: usize, //pub or not
+	pub width: usize,
+	pub height: usize,
 	pub pixels: Vec<u32>
 	//should be an array but idk how to
 }
@@ -48,6 +51,5 @@ impl Texture{
 			height: height,
 			pixels: pixels
 		}
-
 	}
 }

@@ -133,7 +133,7 @@ fn main() {
 			}
 		}
 		renderer.clear();
-		renderer.render_texture(&test_tex, None, None);
+		renderer.render_texture(&test_tex, None, Some(Rect{x: 0., y: 0., w: 300., h: 300.}));
 
 		renderer.present(&mut window_handler.window);
 		renderer.clear();

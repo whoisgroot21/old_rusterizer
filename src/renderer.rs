@@ -161,18 +161,30 @@ impl Renderer{
 	}
 
 	pub fn render_texture(&mut self, tex: &Texture, src_rect: Option<Rect>, dest_rect: Option<Rect>){
-		
-		let src = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};
-		let dest = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};
-		//check if none
-		for i in 0..tex.height {
-			for j in 0..tex.width{
-				self.put_pixel_with_color_u32((j+dest.x as usize) as u16, (i+dest.y as usize) as u16, tex.pixels[i*tex.width+j])
+		let mut src = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};;
+		let mut dest = Rect{x:0.0, y:0.0, w:tex.width as f32, h:tex.height as f32};;
+		if let Some(src_r) =  src_rect{
+			src.x = src_r.x;
+			src.y = src_r.y;
+			src.w = src_r.w;
+			src.h = src_r.h;
+		}
+
+		if let Some(des_r) =  dest_rect{
+			dest.x = des_r.x;
+			dest.y = des_r.y;
+			dest.w = des_r.w;
+			dest.h = des_r.h;
+		}
+
+		for i in 0..dest.h as usize{
+			for j in 0..dest.w as usize{
+				let u = (((j as f32*src.w)/dest.w)-1.).floor() as usize;
+				let v = (((i as f32*src.h)/dest.h)-1.).floor() as usize;
+				//if i<99{print!("{} {}  ", v, u);}
+				self.put_pixel_with_color_u32((j+dest.x as usize) as u16, (i+dest.y as usize) as u16,
+					tex.pixels[(src.y as usize +v)*tex.width+u+src.x as usize]);
 			}
 		}
 	}
-
-
-
-
 }
