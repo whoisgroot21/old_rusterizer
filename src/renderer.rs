@@ -21,7 +21,7 @@ impl Renderer{
 			current_color: 0
 		}
 	}
-
+	
 	pub fn clear(&mut self){
 		for i in (0..self.buffer_width*self.buffer_height){
 			self.framebuffer[i] = 0;

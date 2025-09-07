@@ -5,6 +5,7 @@ use std::f32;
 
 //implement generics for vector types
 
+//tuple struct for color (RGB)
 pub struct Color(pub u8, pub u8, pub u8, pub f32);
 
 /*pub struct Color {

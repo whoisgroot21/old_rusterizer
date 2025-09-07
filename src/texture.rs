@@ -1,4 +1,6 @@
 use std::fs;
+use std::fs::File;
+use std::io::Read;
 use crate::util;
 
 //Sprite.rs
@@ -52,4 +54,38 @@ impl Texture{
 			pixels: pixels
 		}
 	}
+
+
+	//doesnt work
+	pub fn load_from_bmp(filepath: &str)->Texture{
+
+		let mut f = File::open(filepath).expect("404: File not found");
+		let metadata = fs::metadata(filepath).expect("unable to read metadata");
+    	let mut buffer: Vec<u8> = vec![0; metadata.len() as usize];
+    	f.read(&mut buffer).expect("buffer overflow");
+
+    	let width = u32::from_ne_bytes([buffer[18], buffer[19], buffer[20], buffer[21]]) as usize;
+    	let height = u32::from_ne_bytes([buffer[22], buffer[23], buffer[24], buffer[25]]) as usize;
+
+    	let mut pixels = vec![0; width*height];
+
+    	let pixel_start = u32::from_ne_bytes([buffer[10], buffer[11], buffer[12], buffer[13]]) as usize;
+    	let bpp = u16::from_ne_bytes([buffer[28], buffer[29]]) as usize;
+
+    	let row_size = (bpp as f32 *width as f32/32.).ceil() as u32 *4;
+    	let padding = (width%4) as u32;
+
+    	//pixel array abstraction here
+
+    	//for debugging
+    	print!("{:?}", buffer);
+
+    	//print!("Texture Loaded!!");
+    	Texture{
+			width: width,
+			height: height,
+			pixels: pixels
+		}
+
+    }
 }

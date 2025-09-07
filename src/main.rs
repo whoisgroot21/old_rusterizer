@@ -37,7 +37,8 @@ fn main() {
 
     let obj = obj_loader::load_from_obj("res/cube.obj"); //teapot_1
 
-    let test_tex = texture::Texture::load_from_ppm("res/test.ppm");
+    //load the texture
+    let test_tex2 = texture::Texture::load_from_bmp("res/testbmp.bmp");
 
     let model_data = obj.vertices;
     let index_buffer = obj.indices;
@@ -133,8 +134,9 @@ fn main() {
 			}
 		}
 		renderer.clear();
-		renderer.render_texture(&test_tex, None, Some(Rect{x: 0., y: 0., w: 300., h: 300.}));
+		renderer.render_texture(&test_tex2, None, Some(Rect{x:0., y:0., w:100., h:100.}));
 
+		//check this, it seems unsafe to pass the whole window to renderer
 		renderer.present(&mut window_handler.window);
 		renderer.clear();
 		delta_time += now.elapsed().as_millis();
