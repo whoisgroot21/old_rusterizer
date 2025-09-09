@@ -11,6 +11,7 @@ pub struct Texture {
 	pub height: usize,
 	pub pixels: Vec<u32>
 	//should be an array but idk how to
+	//maybe box
 }
 
 impl Texture{
@@ -56,29 +57,43 @@ impl Texture{
 	}
 
 
-	//doesnt work
 	pub fn load_from_bmp(filepath: &str)->Texture{
+
 
 		let mut f = File::open(filepath).expect("404: File not found");
 		let metadata = fs::metadata(filepath).expect("unable to read metadata");
     	let mut buffer: Vec<u8> = vec![0; metadata.len() as usize];
     	f.read(&mut buffer).expect("buffer overflow");
 
-    	let width = u32::from_ne_bytes([buffer[18], buffer[19], buffer[20], buffer[21]]) as usize;
-    	let height = u32::from_ne_bytes([buffer[22], buffer[23], buffer[24], buffer[25]]) as usize;
+    	//let width = u32::from_ne_bytes([buffer[18], buffer[19], buffer[20], buffer[21]]) as usize;
+    	//let height = u32::from_ne_bytes([buffer[22], buffer[23], buffer[24], buffer[25]]) as usize;
+    	//same thing written better
+    	let width = u32::from_ne_bytes(buffer[18..22].try_into().unwrap()) as usize;
+    	let height = u32::from_ne_bytes(buffer[22..26].try_into().unwrap()) as usize;
 
     	let mut pixels = vec![0; width*height];
 
-    	let pixel_start = u32::from_ne_bytes([buffer[10], buffer[11], buffer[12], buffer[13]]) as usize;
-    	let bpp = u16::from_ne_bytes([buffer[28], buffer[29]]) as usize;
+    	let pixel_start = u32::from_ne_bytes(buffer[10..14].try_into().unwrap()) as usize;
+    	let bpp = u16::from_ne_bytes(buffer[28..30].try_into().unwrap()) as usize;
 
-    	let row_size = (bpp as f32 *width as f32/32.).ceil() as u32 *4;
-    	let padding = (width%4) as u32;
+    	//row size is rounded to multiple of four bytes with help of padding
+    	let actual_row_size=(bpp/8)*width as usize;
+    	let row_size = ((((bpp/8)*width)as f32/4.).ceil() as u32 * 4) as usize;
+    	let padding = row_size-actual_row_size as usize;
+
+    	//currently we only support 24bpp bmps
+    	if bpp==24{
+    		for i in 0..height{
+    			for j in 0..width{
+    				//upside down
+    				//pixels[(i*width)+j]=util::Color(buffer[pixel_start+(i*row_size)+(j*3)+2], buffer[pixel_start+(i*row_size)+(j*3)+1], buffer[pixel_start+(i*row_size)+(j*3)+0], 1.).to_u32();
+    				//right side up
+    				pixels[(i*width)+j]=util::Color(buffer[pixel_start+((height-1-i)*row_size)+(j*3)+2], buffer[pixel_start+((height-1-i)*row_size)+(j*3)+1], buffer[pixel_start+((height-1-i)*row_size)+(j*3)+0], 1.).to_u32();
+    			}
+    		}
+    	}
 
     	//pixel array abstraction here
-
-    	//for debugging
-    	print!("{:?}", buffer);
 
     	//print!("Texture Loaded!!");
     	Texture{
