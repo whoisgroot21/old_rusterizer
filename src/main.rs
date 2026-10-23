@@ -31,21 +31,18 @@ fn main() {
 
 	let mut delta_time:u128 = 0;
 
-	let mut obj_pos = vec3{x: 0.0, y: 0.0, z: 100.0};
+	let mut obj_pos = vec3{x: 50.0, y: 20.0, z: 100.0};
 
 	let mut rad:f32 = 0.0;
 
     let obj = obj_loader::load_from_obj("res/cube.obj"); //teapot_1
-
-    //load the texture
-    let test_tex2 = texture::Texture::load_from_bmp("res/testbmp.bmp");
 
     let model_data = obj.vertices;
     let index_buffer = obj.indices;
 
     while window_handler.window.is_open() && !window_handler.window.is_key_down(Key::Escape) {
 
-  		let now = time::Instant::now();
+  		let time_now = time::Instant::now();
 
 		let scale = matrix4x4{data: [
 			[30.0, 0.0,  0.0,  0.0],
@@ -80,7 +77,7 @@ fn main() {
   				[0.0, rad.sin(), rad.cos(), 0.0],
   				[0.0, 0.0, 0.0, 1.0]
   			]};*/
-  			renderer.clear();
+  			//renderer.clear();
   			delta_time-=60;
   		}
 
@@ -130,16 +127,20 @@ fn main() {
 				p3.y = (p3.y+1.0)*(HEIGHT/2) as f32;
 				p3.z = ((p3.z*2.)/(Z_FAR-Z_NEAR))-1.;
 				
-				renderer.draw_triangle("FILL", &p1, &p2, &p3);
+				renderer.set_color(util::Color(255,255,255, 1.0));
+				renderer.draw_triangle("WIREFRAME", &p1, &p2, &p3);
+
 			}
 		}
-		renderer.clear();
-		renderer.render_texture(&test_tex2, None, Some(Rect{x:0., y:0., w:100., h:100.}));
 
 		//check this, it seems unsafe to pass the whole window to renderer
-		renderer.present(&mut window_handler.window);
+		window_handler.present(&mut renderer);
 		renderer.clear();
-		delta_time += now.elapsed().as_millis();
+		
+
+
+
+		delta_time += time_now.elapsed().as_millis();
 		//println!("{:?}", delta_time);
 	}
 }

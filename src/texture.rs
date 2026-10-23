@@ -83,6 +83,7 @@ impl Texture{
 
     	//currently we only support 24bpp bmps
     	if bpp==24{
+    		//pixel array abstraction here
     		for i in 0..height{
     			for j in 0..width{
     				//upside down
@@ -93,7 +94,6 @@ impl Texture{
     		}
     	}
 
-    	//pixel array abstraction here
 
     	//print!("Texture Loaded!!");
     	Texture{

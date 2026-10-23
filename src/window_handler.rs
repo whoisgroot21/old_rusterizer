@@ -3,13 +3,14 @@
 use minifb::{Window, WindowOptions};
 use crate::util::*;
 
+use crate::Renderer;
+
+//dont like this name
+//maybe Window handler maybe window context or window handle or idk
 pub struct WindowHandler {
-	pub window: Window,
-	pub framebuffer: Vec<u32>,
-	pub depth_buffer: Vec<f32>,
-	pub WIDTH: usize,
-	pub HEIGHT: usize,
-	pub current_color: u32
+	pub window: Window,//idk pub
+	WIDTH: usize,//idk man
+	HEIGHT: usize
 
 }
 
@@ -24,17 +25,18 @@ impl WindowHandler{
 
 		window.limit_update_rate(Some(std::time::Duration::from_micros(16600)));
 
-		let mut framebuffer: Vec<u32> = vec![0;WIDTH*HEIGHT];
+		let mut color_buffer: Vec<u32> = vec![0;WIDTH*HEIGHT];
 		let mut depth_buffer: Vec<f32> = vec![1.;WIDTH*HEIGHT];
 
 		WindowHandler{
 			window: window,
-			framebuffer: framebuffer,
-			depth_buffer: depth_buffer,
 			WIDTH: WIDTH,
-			HEIGHT: HEIGHT,
-			current_color: Color(255,255,255,1.0).to_u32()
+			HEIGHT: HEIGHT
 		}
+	}
+
+	pub fn present(&mut self, renderer: &mut Renderer){
+		self.window.update_with_buffer(&renderer.color_buffer, renderer.buffer_width, renderer.buffer_height).unwrap();
 	}
 }
 

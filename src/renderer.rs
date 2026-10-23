@@ -1,11 +1,12 @@
 use crate::util::*;
 use crate::texture::*;
-use minifb::Window;
 
+
+//remove some pubs
 pub struct Renderer {
 	pub buffer_width: usize,
 	pub buffer_height: usize,
-	pub framebuffer: Vec<u32>,
+	pub color_buffer: Vec<u32>,
 	pub depth_buffer: Vec<f32>,
 	pub current_color: u32
 } 
@@ -16,7 +17,7 @@ impl Renderer{
 		Renderer{
 			buffer_width: width,
 			buffer_height: height,
-			framebuffer: vec![0;width*height],
+			color_buffer: vec![0;width*height],
 			depth_buffer: vec![1.;width*height],
 			current_color: 0
 		}
@@ -24,13 +25,9 @@ impl Renderer{
 	
 	pub fn clear(&mut self){
 		for i in (0..self.buffer_width*self.buffer_height){
-			self.framebuffer[i] = 0;
+			self.color_buffer[i] = 0;
 			self.depth_buffer[i]= 1.;
 		}
-	}
-
-	pub fn present(&mut self, window: &mut Window){
-		window.update_with_buffer(&self.framebuffer, self.buffer_width, self.buffer_height).unwrap();
 	}
 
 	pub fn set_color(&mut self, color:Color){
@@ -39,15 +36,15 @@ impl Renderer{
 
 	#[allow(non_snake_case)]
 	pub fn putPixel(&mut self, x:u16, y:u16){
-		self.framebuffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = self.current_color;
+		self.color_buffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = self.current_color;
 	}
 
 	pub fn put_pixel_with_color(&mut self, x:u16, y:u16, color:Color){
-		self.framebuffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = color.to_u32();
+		self.color_buffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = color.to_u32();
 	}
 
 	pub fn put_pixel_with_color_u32(&mut self, x:u16, y:u16, color:u32){
-		self.framebuffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = color;
+		self.color_buffer[(x as u32 + y as u32 *self.buffer_width as u32)as usize] = color;
 	}
 
 
@@ -139,23 +136,6 @@ impl Renderer{
 				//draw
 				self.draw_line_with_vec(&vec3{x: x1, y:(sp2.y+i), z: z1}, &vec3{x: x2, y:(sp2.y+i), z: z2});
 			}
-		}
-		else {panic!("Invalid style");}
-	}
-
-	pub fn draw_rect(&mut self, style:&str, rect: Rect)
-	{
-		if style == "WIREFRAME"{
-			self.draw_line(rect.x as u16, rect.y as u16, (rect.x+rect.w) as u16, rect.y as u16);
-			self.draw_line(rect.x as u16, rect.y as u16, rect.x as u16, (rect.y+rect.h) as u16);
-			self.draw_line((rect.x+rect.w) as u16, rect.y as u16, (rect.x+rect.w) as u16, (rect.y+rect.h) as u16);
-			self.draw_line(rect.x as u16, (rect.y+rect.h) as u16, (rect.x+rect.w) as u16, (rect.y+rect.h) as u16);
-		}
-		else if style == "FILL"{
-			for i in 0..rect.h as u32 +1{
-				self.draw_line(rect.x as u16, rect.y as u16 +i as u16, (rect.x+rect.w) as u16, rect.y as u16 + i as u16)
-			}
-			
 		}
 		else {panic!("Invalid style");}
 	}
